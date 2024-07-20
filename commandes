@@ -1,0 +1,7 @@
+npx tsc --init
+
+npx prisma migrate dev --name CreateUsersTable
+
+npx prisma studio
+
+https://www.youtube.com/watch?v=6-mGtUyfGLw

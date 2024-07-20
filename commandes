@@ -5,3 +5,10 @@ npx prisma migrate dev --name CreateUsersTable
 npx prisma studio
 
 https://www.youtube.com/watch?v=6-mGtUyfGLw
+
+
+DATABASE_URL="mysql://root@localhost:3306/ecommerce?schema=public"
+
+PORT=3000
+
+JWT_SECRET=fdkdlmemfmlfmlmflmrlmrlmlflmfml

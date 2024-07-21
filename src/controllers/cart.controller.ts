@@ -7,6 +7,7 @@ import {
 import { Product } from '@prisma/client';
 
 import { prismaClient } from '../';
+import { BadRequestException } from '../exceptions/bad-request';
 import { NotFoundException } from '../exceptions/not-found';
 import { ErrorCodes } from '../exceptions/root';
 import {
@@ -26,8 +27,7 @@ export const addItemToCart = async (req: Request, res: Response, next: NextFunct
             throw new NotFoundException('user not found',ErrorCodes.USER_NOT_FOUND) 
         }
 
-        try{    
-            
+        try{         
         product = await prismaClient.product.findFirstOrThrow({ where: { id: validationData.productId } });
       } catch(error){            
         throw new NotFoundException('product not found',ErrorCodes.PRODUCT_NOT_FOUND) 
@@ -66,6 +66,16 @@ export const changeQuantity=async (req: Request, res: Response, next: NextFuncti
     if(!user){
         throw new NotFoundException('user not found',ErrorCodes.USER_NOT_FOUND) 
     }
+
+    const cartItemBd = await prismaClient.cartItem.findFirstOrThrow({
+        where: {
+            id: +req.params.id
+        }
+    })
+    
+    if(cartItemBd.userId !== user.id){
+        throw new BadRequestException('cart item is not belongs to user connected',ErrorCodes.CART_ITEM_NOT_BELONGS_TO_USER)
+    }
     const cartItem = await prismaClient.cartItem.update({
         where: {
             id: +req.params.id
@@ -91,6 +101,10 @@ export const deleteCart = async (req: Request, res: Response, next: NextFunction
                 id: +id
             }
         })
+
+      if( cartItem.userId !== user.id){
+        throw new BadRequestException('cart item is not belongs to user connected',ErrorCodes.CART_ITEM_NOT_BELONGS_TO_USER)       
+      }
     }catch(error){
         throw new NotFoundException('cart item not found',ErrorCodes.CART_ITEM_NOT_FOUND)
     }

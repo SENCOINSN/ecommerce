@@ -9,6 +9,9 @@ import {
   ErrorCodes,
   HttpException,
 } from './exceptions/root';
+import { ZodError } from 'zod';
+import { BadRequestException } from './exceptions/bad-request';
+import { UnProcessableEntityException } from './exceptions/UnprocessableEntity';
 
 export const errorHandler =(method:Function)=>{ 
 return async (req:Request,res:Response,next:NextFunction)=>{
@@ -20,12 +23,14 @@ return async (req:Request,res:Response,next:NextFunction)=>{
         if(error instanceof HttpException){
             exception = error
 }else{
-
-    exception = new InternalException("Something went wrong",error,ErrorCodes.INTERNAL_EXCEPTION)
+    if(error instanceof ZodError){
+      exception = new UnProcessableEntityException("Unprocessable entity",ErrorCodes.UNPROCESSABLE_ENTITY,error);
+    }else{
+      exception = new InternalException("Something went wrong",error,ErrorCodes.INTERNAL_EXCEPTION)
+    }
 
 }
 next(exception);
-
 }
  }
 }

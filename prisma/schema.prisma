@@ -26,15 +26,31 @@ model User {
   role Role @default(USER)
   createdAt DateTime @default(now())
   updateAt DateTime @updatedAt
+  adresses Address[]
 
   @@map("users")
+
+}
+
+
+model Address{
+  id Int @id @default(autoincrement())
+  lineOne String
+  lineTwo String
+  city String 
+  country String 
+  pincode String 
+  userId Int 
+  user User @relation(fields: [userId],references: [id])
+  createdAt DateTime @default(now())
+  updateAt DateTime @updatedAt
 
 }
 
 model Product{
   id Int @id @default(autoincrement())
   name String
-  description String
+  description String @db.Text
   price Decimal
   tags String
   createdAt DateTime @default(now())
